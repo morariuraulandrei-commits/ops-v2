@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="RAPT">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-Frame-Options" content="DENY">
+<meta http-equiv="Referrer-Policy" content="no-referrer">
+<meta name="theme-color" content="#0d1b3e">
+<title>RAPT</title>
+<style>
+:root{
+  --bg:#f2f4f8; --card:#fff; --primary:#0d1b3e; --accent:#1a56db;
+  --s1:#1a56db; --s1l:#dbeafe; --s1d:#1e40af;
+  --s2:#7c3aed; --s2l:#ede9fe; --s2d:#6d28d9;
+  --s3:#0f766e; --s3l:#ccfbf1; --s3d:#0d6660;
+  --success:#16a34a; --danger:#dc2626;
+  --text:#111827; --text2:#6b7280; --border:#e5e7eb;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.06);
+  --shadow-md:0 4px 6px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.06);
+  --radius:14px; --radius-sm:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{height:-webkit-fill-available;height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;min-height:100vh;min-height:-webkit-fill-available;min-height:100dvh;overflow:hidden;position:fixed;width:100%;top:0;left:0;right:0;bottom:0}
+input[type=number],input[type=text],input[type=date]{-webkit-appearance:none;appearance:none;font-size:16px}
+button{-webkit-appearance:none;appearance:none;cursor:pointer;border:none}
+
+/* ── SPLASH ── */
+#splash{position:fixed;inset:0;background:var(--primary);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s}
+#splash.gone{opacity:0;pointer-events:none}
+.sp-badge{width:90px;height:90px;background:linear-gradient(145deg,#1a56db,#3b82f6);border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:46px;margin-bottom:18px;box-shadow:0 8px 32px rgba(26,86,219,.5)}
+.sp-title{color:#fff;font-size:22px;font-weight:700}
+.sp-sub{color:rgba(255,255,255,.45);font-size:13px;margin-top:5px}
+.sp-bar-wrap{margin-top:38px;width:48px;height:3px;background:rgba(255,255,255,.15);border-radius:3px;overflow:hidden}
+.sp-bar{height:100%;background:#3b82f6;border-radius:3px;animation:spload .85s ease forwards}
+@keyframes spload{from{width:0}to{width:100%}}
+
+/* ── HEADER ── */
+.hdr{height:54px;background:var(--primary);display:flex;align-items:center;padding:0 14px;flex-shrink:0;z-index:100}
+.hdr-icon{width:34px;height:34px;background:linear-gradient(145deg,#1a56db,#3b82f6);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;margin-right:10px}
+.hdr-info{flex:1}
+.hdr-title{color:#fff;font-size:15px;font-weight:700;line-height:1.2}
+.hdr-sub{color:rgba(255,255,255,.45);font-size:10.5px}
+.hdr-badge{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:8px;padding:5px 10px;text-align:right;flex-shrink:0}
+.hdr-day{color:#fff;font-size:13px;font-weight:700}
+.hdr-date{color:rgba(255,255,255,.5);font-size:10px;margin-top:1px}
+
+/* ── TABS ── */
+.tabs{height:52px;background:var(--primary);display:flex;border-top:1px solid rgba(255,255,255,.08);flex-shrink:0}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:rgba(255,255,255,.38);font-size:10px;font-weight:600;letter-spacing:.3px;background:none;position:relative;transition:color .18s}
+.tab.active{color:#fff}
+.tab.active::after{content:'';position:absolute;bottom:0;left:18%;right:18%;height:2.5px;background:#3b82f6;border-radius:2px 2px 0 0}
+.tab-ic{font-size:19px;line-height:1}
+
+/* ── CONTENT ── */
+.area{flex:1;overflow:hidden;position:relative;-webkit-overflow-scrolling:touch}
+.scr{position:absolute;top:0;left:0;right:0;bottom:0;overflow-y:scroll;-webkit-overflow-scrolling:touch;padding:12px 12px 110px;display:none}
+.scr.active{display:block}
+
+/* ── SECTION HEADER ── */
+.sh{display:flex;align-items:center;gap:8px;margin:16px 0 7px;padding:0 2px}
+.sh:first-child{margin-top:2px}
+.sh-dot{width:4px;height:16px;background:var(--accent);border-radius:2px}
+.sh-lbl{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.7px}
+
+/* ── CARD ── */
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:8px}
+.cr{display:flex;align-items:center;padding:11px 14px;border-bottom:1px solid var(--border);gap:10px}
+.cr:last-child{border-bottom:none}
+.cl{flex:1;font-size:13.5px;color:var(--text);line-height:1.3}
+.cl small{display:block;font-size:11px;color:var(--text2);margin-top:1px}
+.ci{width:80px;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:7px 8px;font-size:15px;font-weight:600;text-align:center;color:var(--text);background:#f9fafb;transition:border-color .15s}
+.ci:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,86,219,.1);background:#fff}
+.ci.w{width:148px;text-align:left;font-weight:400;font-size:13px}
+
+/* ── DATE BAR ── */
+.date-bar{background:linear-gradient(130deg,var(--primary),#1e3a8a);border-radius:var(--radius);padding:13px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow-md)}
+.date-bar-left{flex:1}
+.date-bar-lbl{color:rgba(255,255,255,.5);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px}
+.date-bar-val{color:#fff;font-size:16px;font-weight:700;margin-top:2px}
+.date-edit{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);border-radius:8px;padding:7px 13px;color:#fff;font-size:12px;font-weight:600}
+#dpWrap{display:none;margin-bottom:8px}
+#dpWrap input{width:100%;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-size:15px;background:var(--card);color:var(--text)}
+
+/* ── SHIFT SELECTOR ── */
+.shift-sel{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px}
+.sh-btn{border-radius:12px;padding:14px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;transition:transform .12s,box-shadow .12s;border:2.5px solid transparent}
+.sh-btn:active{transform:scale(.95)}
+.sh-btn .sh-num{font-size:22px;font-weight:800;line-height:1}
+.sh-btn .sh-lbl{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;opacity:.75}
+.sh-btn .sh-status{font-size:11px;font-weight:600;margin-top:2px}
+.sh1{background:var(--s1l);color:var(--s1d)}
+.sh1.sel{border-color:var(--s1d);background:var(--s1);color:#fff;box-shadow:0 4px 14px rgba(26,86,219,.35)}
+.sh2{background:var(--s2l);color:var(--s2d)}
+.sh2.sel{border-color:var(--s2d);background:var(--s2);color:#fff;box-shadow:0 4px 14px rgba(124,58,237,.35)}
+.sh3{background:var(--s3l);color:var(--s3d)}
+.sh3.sel{border-color:var(--s3d);background:var(--s3);color:#fff;box-shadow:0 4px 14px rgba(15,118,110,.35)}
+
+/* ── SUMMARY STRIP ── */
+.sum-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:8px}
+.sum-box{background:var(--card);border-radius:10px;padding:10px 8px;text-align:center;box-shadow:var(--shadow)}
+.sum-v{font-size:20px;font-weight:800;color:var(--accent);line-height:1}
+.sum-l{font-size:9.5px;color:var(--text2);margin-top:3px;font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+
+/* ── ACTION BAR ── */
+.act-bar{position:fixed;bottom:0;left:0;right:0;z-index:200;background:var(--card);border-top:1px solid var(--border);padding:10px 12px env(safe-area-inset-bottom, 20px);display:grid;grid-template-columns:46px 1fr 1fr;gap:7px;box-shadow:0 -3px 12px rgba(0,0,0,.08)}
+.act-bar.hidden{display:none}
+.abtn{border:none;border-radius:11px;padding:13px 0;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:5px;transition:transform .1s,opacity .1s}
+.abtn:active{transform:scale(.95);opacity:.82}
+.a-clr{background:#f3f4f6;color:#6b7280}
+.a-sav{background:var(--primary);color:#fff}
+.a-pdf{background:var(--success);color:#fff}
+
+/* ── DAILY SUMMARY ── */
+.day-pick{display:flex;align-items:center;gap:10px;background:var(--card);border-radius:var(--radius);padding:13px 14px;margin-bottom:8px;box-shadow:var(--shadow)}
+.day-pick select{flex:1;border:1.5px solid var(--border);border-radius:8px;padding:8px 10px;font-size:14px;background:#f9fafb;color:var(--text);-webkit-appearance:none}
+.day-pick label{font-size:12px;font-weight:700;color:var(--text2);flex-shrink:0}
+
+.shifts-status{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:8px}
+.ss-box{border-radius:10px;padding:11px 8px;text-align:center}
+.ss-box .ss-n{font-size:18px;font-weight:800;line-height:1}
+.ss-box .ss-l{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-top:3px;opacity:.75}
+.ss-box .ss-s{font-size:11px;margin-top:4px;font-weight:600}
+.ss-done{background:#dcfce7;color:#166534}
+.ss-miss{background:#f3f4f6;color:#9ca3af}
+
+.tot-table{width:100%;border-collapse:collapse;font-size:12px}
+.tot-table td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.tot-table tr:last-child td{border-bottom:none}
+.tot-table .tk{color:var(--text2);font-weight:500;width:60%}
+.tot-table .tv{font-weight:700;font-size:15px;color:var(--primary);text-align:right}
+.tot-table .tv.big{font-size:18px;color:var(--accent)}
+.tot-table .tv.green{color:var(--success)}
+.tot-sec{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:8px}
+.tot-sec-hdr{background:var(--primary);padding:9px 14px;color:rgba(255,255,255,.9);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;display:flex;align-items:center;gap:6px}
+
+/* ── REPORTS LIST ── */
+.ri{background:var(--card);border-radius:var(--radius);padding:13px 14px;margin-bottom:7px;box-shadow:var(--shadow);display:flex;align-items:center;gap:10px}
+.ri-left{flex:1;min-width:0}
+.ri-date{font-size:15px;font-weight:700;color:var(--primary)}
+.ri-meta{font-size:11.5px;color:var(--text2);margin-top:2px}
+.ri-shifts{display:flex;gap:4px;margin-top:5px}
+.ri-sbadge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px}
+.ri-s1{background:var(--s1l);color:var(--s1d)}
+.ri-s2{background:var(--s2l);color:var(--s2d)}
+.ri-s3{background:var(--s3l);color:var(--s3d)}
+.ri-miss{background:#f3f4f6;color:#9ca3af}
+.ri-actions{display:flex;gap:5px;flex-shrink:0}
+.ribtn{border:none;border-radius:7px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:15px}
+.ribtn-v{background:#eff6ff;color:#1d4ed8}
+.ribtn-p{background:#f0fdf4;color:#15803d}
+.ribtn-d{background:#fef2f2;color:#dc2626}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:55px 20px}
+.empty .ei{font-size:52px;margin-bottom:12px}
+.empty .et{font-size:14px;color:var(--text2);line-height:1.55}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%) translateY(8px);background:#1f2937;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;z-index:9998;opacity:0;transition:opacity .22s,transform .22s;pointer-events:none;white-space:nowrap;box-shadow:var(--shadow-md)}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── LOCK SCREEN ── */
+#lock{position:fixed;inset:0;background:#0d1b3e;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:99999;padding:30px}
+#lock.gone{display:none}
+.lock-badge{width:80px;height:80px;background:linear-gradient(145deg,#1a56db,#3b82f6);border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:40px;margin-bottom:16px}
+.lock-title{color:#fff;font-size:20px;font-weight:700;margin-bottom:4px}
+.lock-sub{color:rgba(255,255,255,.45);font-size:13px;margin-bottom:32px}
+.lock-input{width:100%;max-width:280px;border:2px solid rgba(255,255,255,.2);border-radius:12px;padding:14px 16px;font-size:18px;background:rgba(255,255,255,.08);color:#fff;text-align:center;letter-spacing:3px;outline:none;margin-bottom:12px}
+.lock-input::placeholder{letter-spacing:0;font-size:14px;color:rgba(255,255,255,.3)}
+.lock-input:focus{border-color:#3b82f6}
+.lock-btn{width:100%;max-width:280px;background:#1a56db;color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700}
+.lock-err{color:#f87171;font-size:13px;margin-top:8px;min-height:20px}
+
+/* ── DARK MODE ── */
+[data-theme="dark"]{
+  --bg:#0f172a;--card:#1e293b;--primary:#1e293b;--accent:#3b82f6;
+  --text:#f1f5f9;--text2:#94a3b8;--border:#334155;
+  --shadow:0 1px 3px rgba(0,0,0,.35),0 1px 2px rgba(0,0,0,.25);
+  --shadow-md:0 4px 6px rgba(0,0,0,.3),0 2px 4px rgba(0,0,0,.22);
+  --s1l:#1e3a8a;--s1d:#93c5fd;
+  --s2l:#3b1f6b;--s2d:#c4b5fd;
+  --s3l:#134e4a;--s3d:#6ee7b7;
+  --success:#22c55e;--danger:#f87171;
+}
+[data-theme="dark"] .hdr{background:#0f172a;border-bottom:1px solid #334155}
+[data-theme="dark"] .tabs{background:#0f172a;border-top:1px solid #334155}
+[data-theme="dark"] .ci{background:#0f172a;color:#f1f5f9;border-color:#334155}
+[data-theme="dark"] .ci:focus{background:#1e293b}
+[data-theme="dark"] .ci.w{background:#0f172a}
+[data-theme="dark"] #dpWrap input,[data-theme="dark"] .day-pick select{background:#1e293b;color:#f1f5f9;border-color:#334155}
+[data-theme="dark"] .date-bar{background:linear-gradient(130deg,#1e3a8a,#1e293b)}
+[data-theme="dark"] .a-clr{background:#334155;color:#94a3b8}
+[data-theme="dark"] .act-bar{background:#1e293b;border-top-color:#334155}
+[data-theme="dark"] .ss-done{background:#14532d;color:#86efac}
+[data-theme="dark"] .ss-miss{background:#334155;color:#64748b}
+[data-theme="dark"] .ribtn-v{background:#1e3a8a;color:#93c5fd}
+[data-theme="dark"] .ribtn-p{background:#14532d;color:#86efac}
+[data-theme="dark"] .ribtn-d{background:#7f1d1d;color:#fca5a5}
+[data-theme="dark"] .sh1.sel{background:#1a56db}
+[data-theme="dark"] .sh2.sel{background:#7c3aed}
+[data-theme="dark"] .sh3.sel{background:#0f766e}
+[data-theme="dark"] .lock-input{background:rgba(255,255,255,.06)}
+
+/* ── DARK TOGGLE ── */
+.dark-toggle{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:8px;color:#fff;font-size:16px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:6px;cursor:pointer}
+
+/* ── OFFICER NAME ── */
+.ofiter-bar{background:var(--card);border-radius:var(--radius);padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow)}
+.ofiter-bar label{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;flex-shrink:0}
+.ofiter-bar input{flex:1;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;font-size:14px;background:var(--bg);color:var(--text);outline:none}
+.ofiter-bar input:focus{border-color:var(--accent)}
+
+/* ── GRAFICE ── */
+.chart-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:8px}
+.chart-hdr{background:var(--primary);padding:9px 14px;color:rgba(255,255,255,.9);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px}
+.chart-body{padding:12px 14px}
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;font-size:11.5px}
+.bar-lbl{width:64px;color:var(--text2);font-weight:600;text-align:right;flex-shrink:0;font-size:11px}
+.bar-wrap{flex:1;background:var(--border);border-radius:4px;height:18px;overflow:hidden;position:relative}
+.bar-fill{height:100%;border-radius:4px;transition:width .5s ease;min-width:2px}
+.bar-fill.pv{background:linear-gradient(90deg,#1a56db,#3b82f6)}
+.bar-fill.ts{background:linear-gradient(90deg,#7c3aed,#a78bfa)}
+.bar-fill.vit{background:#f59e0b}
+.bar-fill.cent{background:#10b981}
+.bar-fill.tel{background:#ef4444}
+.bar-fill.ldoc{background:#8b5cf6}
+.bar-fill.opr{background:#06b6d4}
+.bar-fill.alt{background:#94a3b8}
+.bar-val{width:28px;font-weight:700;color:var(--text);font-size:12px;flex-shrink:0;text-align:right}
+.chart-legend{display:flex;flex-wrap:wrap;gap:8px;padding:4px 0 2px;font-size:10.5px}
+.leg-item{display:flex;align-items:center;gap:4px;color:var(--text2)}
+.leg-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:8px}
+.stat-box{background:var(--card);border-radius:10px;padding:12px 10px;text-align:center;box-shadow:var(--shadow)}
+.stat-v{font-size:22px;font-weight:800;color:var(--accent);line-height:1}
+.stat-l{font-size:10px;color:var(--text2);margin-top:3px;font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+
+/* ── PERIOD REPORT ── */
+.period-card{background:var(--card);border-radius:var(--radius);padding:13px 14px;margin-bottom:8px;box-shadow:var(--shadow)}
+.period-card label{font-size:12px;font-weight:700;color:var(--text2);display:block;margin-bottom:6px}
+.period-card select{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 10px;font-size:14px;background:var(--bg);color:var(--text);-webkit-appearance:none;margin-bottom:10px;outline:none}
+.period-card select:focus{border-color:var(--accent)}
+.btn-period{width:100%;background:var(--primary);color:#fff;border:none;border-radius:11px;padding:13px;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px}
+[data-theme="dark"] .period-card select{background:#1e293b}
+[data-theme="dark"] .period-card{background:var(--card)}
+
+/* ── CSV BUTTON ── */
+.btn-csv{width:100%;background:#0f766e;color:#fff;border:none;border-radius:11px;padding:13px;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:8px}
+
+/* ── PRINT ── */
+#pv{display:none}
+@media print{
+  body>*:not(#pv){display:none!important}
+  #pv{display:block!important}
+  @page{size:A4 portrait;margin:8mm 10mm}
+}
+</style>
+</head>
+<body>
+
+<!-- LOCK SCREEN -->
+<div id="lock">
+  <div class="lock-badge">🔒</div>
+  <div class="lock-title">RAPT</div>
+  <div class="lock-sub">Introdu parola pentru acces</div>
+  <input class="lock-input" type="password" id="lockPwd" placeholder="Parolă" onkeydown="if(event.key==='Enter')checkPwd()" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <button class="lock-btn" id="lockBtn" onclick="checkPwd()">🔓 Intră</button>
+  <div class="lock-err" id="lockErr"></div>
+</div>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="sp-badge">🚔</div>
+  <div class="sp-title">RAPT</div>
+  <div class="sp-sub">Raportare Activități — 3 Schimburi</div>
+  <div class="sp-bar-wrap"><div class="sp-bar"></div></div>
+</div>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-icon">🚔</div>
+  <div class="hdr-info">
+    <div class="hdr-title">RAPT</div>
+    <div class="hdr-sub">Raportare Activități Poliție Trafic</div>
+  </div>
+  <div class="hdr-badge">
+    <div class="hdr-day" id="hDay">—</div>
+    <div class="hdr-date" id="hDate">—</div>
+  </div>
+  <button class="dark-toggle" id="darkBtn" onclick="toggleDark()" title="Dark mode">🌙</button>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" id="tb-form" onclick="showTab('form')"><span class="tab-ic">📝</span>Schimb</button>
+  <button class="tab" id="tb-day"  onclick="showTab('day')"><span class="tab-ic">📊</span>Zi</button>
+  <button class="tab" id="tb-arch" onclick="showTab('arch')"><span class="tab-ic">📋</span>Arhivă</button>
+  <button class="tab" id="tb-graf" onclick="showTab('graf')"><span class="tab-ic">📈</span>Grafice</button>
+  <button class="tab" id="tb-info" onclick="showTab('info')"><span class="tab-ic">ℹ️</span>Info</button>
+</div>
+
+<div class="area">
+
+<!-- ══════════════════════ FORM SCREEN ══════════════════════ -->
+<div class="scr active" id="scr-form">
+
+  <!-- OFFICER -->
+  <div class="ofiter-bar">
+    <label>👮 Ofițer:</label>
+    <input type="text" id="f_ofiter" placeholder="Nume polițist..." autocomplete="off">
+  </div>
+
+  <!-- DATE -->
+  <div class="date-bar">
+    <div class="date-bar-left">
+      <div class="date-bar-lbl">📅 Data raportului</div>
+      <div class="date-bar-val" id="datDisp">—</div>
+    </div>
+    <button class="date-edit" onclick="toggleDP()">Schimbă</button>
+  </div>
+  <div id="dpWrap"><input type="date" id="f_date" onchange="onDateChg()"></div>
+
+  <!-- SHIFT SELECTOR -->
+  <div class="sh"><div class="sh-dot"></div><span class="sh-lbl">Selectează schimbul</span></div>
+  <div class="shift-sel">
+    <button class="sh-btn sh1" id="sBtn1" onclick="selShift(1)">
+      <span class="sh-num">I</span>
+      <span class="sh-lbl">Schimb</span>
+      <span class="sh-status" id="ss1">—</span>
+    </button>
+    <button class="sh-btn sh2" id="sBtn2" onclick="selShift(2)">
+      <span class="sh-num">II</span>
+      <span class="sh-lbl">Schimb</span>
+      <span class="sh-status" id="ss2">—</span>
+    </button>
+    <button class="sh-btn sh3" id="sBtn3" onclick="selShift(3)">
+      <span class="sh-num">III</span>
+      <span class="sh-lbl">Schimb</span>
+      <span class="sh-status" id="ss3">—</span>
+    </button>
+  </div>
+
+  <!-- LIVE SUMMARY -->
+  <div class="sum-strip">
+    <div class="sum-box"><div class="sum-v" id="lv_pv">0</div><div class="sum-l">PV</div></div>
+    <div class="sum-box"><div class="sum-v" id="lv_ts">0</div><div class="sum-l">Sancțiuni</div></div>
+    <div class="sum-box"><div class="sum-v" id="lv_av">0</div><div class="sum-l">Avertismente</div></div>
+  </div>
+
+  <!-- EFECTIV -->
+  <div class="sh"><div class="sh-dot"></div><span class="sh-lbl">👮 Efectiv</span></div>
+  <div class="card">
+    <div class="cr"><span class="cl">Polițiști în serviciu</span><input type="number" id="f_pol" class="ci" min="0" placeholder="0" oninput="liveSum()"></div>
+    <div class="cr"><span class="cl">— Patrulare</span><input type="number" id="f_pat" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">— Cercetări penale</span><input type="number" id="f_cpen" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">— Alte activități</span><input type="number" id="f_aact" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Acțiuni dispuse</span><input type="number" id="f_adisp" class="ci" min="0" placeholder="0"></div>
+  </div>
+
+  <!-- SANCTIUNI -->
+  <div class="sh"><div class="sh-dot"></div><span class="sh-lbl">📊 Sancțiuni</span></div>
+  <div class="card">
+    <div class="cr"><span class="cl">Procese verbale întocmite</span><input type="number" id="f_pv" class="ci" min="0" placeholder="0" oninput="liveSum()"></div>
+    <div class="cr"><span class="cl">Total sancțiuni aplicate</span><input type="number" id="f_ts" class="ci" min="0" placeholder="0" oninput="liveSum()"></div>
+    <div class="cr"><span class="cl">Avertismente</span><input type="number" id="f_av" class="ci" min="0" placeholder="0" oninput="liveSum()"></div>
+    <div class="cr"><span class="cl">Valoare amenzi<small>în lei</small></span><input type="text" id="f_val" class="ci w" placeholder="0,00"></div>
+  </div>
+
+  <!-- ABATERI -->
+  <div class="sh"><div class="sh-dot"></div><span class="sh-lbl">🚗 Tipuri de abateri</span></div>
+  <div class="card">
+    <div class="cr"><span class="cl">Viteză</span><input type="number" id="f_vit" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Centuri de siguranță</span><input type="number" id="f_cent" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Lipsă Documente</span><input type="number" id="f_ldoc" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Lumini</span><input type="number" id="f_lum" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Opriri / Staționări</span><input type="number" id="f_opr" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Telefon mobil</span><input type="number" id="f_tel" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Alte abateri</span><input type="number" id="f_altab" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">ASM</span><input type="number" id="f_asm" class="ci" min="0" placeholder="0"></div>
+  </div>
+
+  <!-- ALTI PARTICIPANTI -->
+  <div class="sh"><div class="sh-dot"></div><span class="sh-lbl">🚶 Alți participanți</span></div>
+  <div class="card">
+    <div class="cr"><span class="cl">Pietoni</span><input type="number" id="f_piet" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Bicicliști</span><input type="number" id="f_bic" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Cond. trotinete</span><input type="number" id="f_trot" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Motocicliști</span><input type="number" id="f_moto" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Mopediști</span><input type="number" id="f_mop" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Căruțași</span><input type="number" id="f_car" class="ci" min="0" placeholder="0"></div>
+  </div>
+
+  <!-- ACTE NORMATIVE -->
+  <div class="sh"><div class="sh-dot"></div><span class="sh-lbl">📋 Acte normative</span></div>
+  <div class="card">
+    <div class="cr"><span class="cl">Alte acte normative<small>total</small></span><input type="number" id="f_aan" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">L. 132/2017 (RCA)</span><input type="number" id="f_l132" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">O.G. 43/1997</span><input type="number" id="f_og43" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">O.G. 37/2007</span><input type="number" id="f_og37" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">H.G. 1317/2023</span><input type="number" id="f_hg1317" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">H.G. 1373/2008</span><input type="number" id="f_hg1373" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">L. 38/2003 (taxi)</span><input type="number" id="f_l38" class="ci" min="0" placeholder="0"></div>
+  </div>
+
+  <!-- VERIFICARI -->
+  <div class="sh"><div class="sh-dot"></div><span class="sh-lbl">🔬 Verificări și testări</span></div>
+  <div class="card">
+    <div class="cr"><span class="cl">Verificări EDAC<small>val. 1</small></span><input type="number" id="f_edac1" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Verificări EDAC<small>val. 2</small></span><input type="number" id="f_edac2" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Testări alcool<small>val. 1</small></span><input type="number" id="f_alc1" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Testări alcool<small>val. 2</small></span><input type="number" id="f_alc2" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Testări droguri</span><input type="number" id="f_drog" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">SNRI-persoane<small>val. 1</small></span><input type="number" id="f_snrip1" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">SNRI-persoane<small>val. 2</small></span><input type="number" id="f_snrip2" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">SNRI-auto<small>val. 1</small></span><input type="number" id="f_snria1" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">SNRI-auto<small>val. 2</small></span><input type="number" id="f_snria2" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Intervenții la sesizări</span><input type="number" id="f_int" class="ci" min="0" placeholder="0"></div>
+  </div>
+
+  <!-- PERMISE -->
+  <div class="sh"><div class="sh-dot"></div><span class="sh-lbl">🪪 Permise de conducere</span></div>
+  <div class="card">
+    <div class="cr"><span class="cl">Total permise reținute</span><input type="number" id="f_ptot" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Viteză +50</span><input type="number" id="f_pv50" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Viteză +70</span><input type="number" id="f_pv70" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Alcool</span><input type="number" id="f_palc" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Depășire</span><input type="number" id="f_pdep" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Telefon mobil</span><input type="number" id="f_ptel" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Expirate</span><input type="number" id="f_pexp" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Conducere agresivă</span><input type="number" id="f_pagr" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Prioritate pietoni</span><input type="number" id="f_ppp" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Prioritate vehicule</span><input type="number" id="f_ppv" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Semafor</span><input type="number" id="f_psem" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Cale ferată</span><input type="number" id="f_pcf" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Defecțiuni tehnice<small>val. 1</small></span><input type="number" id="f_pdt1" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Defecțiuni tehnice<small>val. 2</small></span><input type="number" id="f_pdt2" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Neresp. disp. polițist<small>val. 1</small></span><input type="number" id="f_pnd1" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Neresp. disp. polițist<small>val. 2</small></span><input type="number" id="f_pnd2" class="ci" min="0" placeholder="0"></div>
+  </div>
+
+  <!-- CERTIFICATE -->
+  <div class="sh"><div class="sh-dot"></div><span class="sh-lbl">📄 Certificate înmatriculare</span></div>
+  <div class="card">
+    <div class="cr"><span class="cl">Total certificate reținute</span><input type="number" id="f_ctot" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">I.T.P. sau înmatric. susp.</span><input type="number" id="f_citp" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Defecțiuni tehnice</span><input type="number" id="f_cdt" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Altele</span><input type="number" id="f_calt" class="ci" min="0" placeholder="0"></div>
+  </div>
+
+  <!-- DIVERSE -->
+  <div class="sh"><div class="sh-dot"></div><span class="sh-lbl">🚨 Diverse</span></div>
+  <div class="card">
+    <div class="cr"><span class="cl">A.R.P.M.</span><input type="number" id="f_arpm" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Soluții în DP</span><input type="number" id="f_sdp" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Accidente grave cercetate</span><input type="number" id="f_accgr" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Accidente ușoare cercetare</span><input type="number" id="f_accus" class="ci" min="0" placeholder="0"></div>
+  </div>
+
+  <!-- INFRACTIUNI -->
+  <div class="sh"><div class="sh-dot"></div><span class="sh-lbl">⚖️ Infracțiuni constatate</span></div>
+  <div class="card">
+    <div class="cr"><span class="cl">Art. 334</span><input type="number" id="f_a334" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Art. 335</span><input type="number" id="f_a335" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Art. 336/1</span><input type="number" id="f_a3361" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Art. 336/2</span><input type="number" id="f_a3362" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Art. 337</span><input type="number" id="f_a337" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Art. 338</span><input type="number" id="f_a338" class="ci" min="0" placeholder="0"></div>
+  </div>
+
+  <!-- RAPOARTE INFORMATIVE -->
+  <div class="sh"><div class="sh-dot"></div><span class="sh-lbl">📈 Statistici schimb</span></div>
+  <div class="card">
+    <div class="cr"><span class="cl">Rapoarte Informative</span><input type="number" id="f_ri" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Avize sistematizare acordate</span><input type="number" id="f_aviz" class="ci" min="0" placeholder="0"></div>
+  </div>
+
+</div><!-- /scr-form -->
+
+<!-- ══════════════════════ ZI SCREEN ══════════════════════ -->
+<div class="scr" id="scr-day">
+
+  <!-- PERIOD REPORT -->
+  <div class="period-card">
+    <label>📋 Raport perioadă:</label>
+    <select id="periodSelect">
+      <option value="7">Ultimele 7 zile</option>
+      <option value="30">Ultimele 30 zile</option>
+      <option value="week">Săptămâna curentă</option>
+      <option value="month">Luna curentă</option>
+    </select>
+    <button class="btn-period" onclick="genPeriodReport()">📄 Generează Raport Perioadă</button>
+  </div>
+
+  <div class="day-pick">
+    <label>📅 Ziua:</label>
+    <select id="daySelect" onchange="loadDaySummary()"></select>
+  </div>
+
+  <!-- Shift status -->
+  <div class="shifts-status">
+    <div class="ss-box ss-miss" id="ds1"><div class="ss-n">I</div><div class="ss-l">Schimb</div><div class="ss-s" id="ds1s">lipsă</div></div>
+    <div class="ss-box ss-miss" id="ds2"><div class="ss-n">II</div><div class="ss-l">Schimb</div><div class="ss-s" id="ds2s">lipsă</div></div>
+    <div class="ss-box ss-miss" id="ds3"><div class="ss-n">III</div><div class="ss-l">Schimb</div><div class="ss-s" id="ds3s">lipsă</div></div>
+  </div>
+
+  <div id="dayContent"></div>
+
+</div><!-- /scr-day -->
+
+<!-- ══════════════════════ ARCHIVE SCREEN ══════════════════════ -->
+<div class="scr" id="scr-arch">
+  <button class="btn-csv" onclick="exportCSV()">📥 Export CSV / Excel</button>
+  <div id="archList"></div>
+</div>
+
+<!-- ══════════════════════ GRAFICE SCREEN ══════════════════════ -->
+<div class="scr" id="scr-graf">
+  <div class="stat-grid" id="grafStats"></div>
+  <div class="chart-card">
+    <div class="chart-hdr">📈 Evoluție PV & Sancțiuni — ultimele 14 zile</div>
+    <div class="chart-body" id="chartTrend"><div class="empty"><div class="ei">📈</div><div class="et">Nu există date salvate.</div></div></div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-hdr">🚗 Tipuri de abateri — total cumulat</div>
+    <div class="chart-body" id="chartAbateri"><div class="empty"><div class="ei">🚗</div><div class="et">Nu există date salvate.</div></div></div>
+  </div>
+</div>
+
+<!-- ══════════════════════ INFO SCREEN ══════════════════════ -->
+<div class="scr" id="scr-info">
+  <div class="sh"><div class="sh-dot"></div><span class="sh-lbl">📲 Cum funcționează</span></div>
+  <div class="card">
+    <div class="cr" style="flex-direction:column;align-items:flex-start;gap:6px">
+      <div style="font-weight:700;font-size:14px;color:var(--primary)">RAPT — Sistem 3 schimburi</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.65">
+        1. Tab <strong>Schimb</strong> → selectezi data și schimbul (I, II sau III)<br>
+        2. Completezi câmpurile pentru acel schimb<br>
+        3. Apeși <strong>💾 Salvează</strong><br>
+        4. Tab <strong>Zi</strong> → aplicația sumează automat toate 3 schimburile și calculează media sancțiunilor/polițist<br>
+        5. Apeși <strong>📄 PDF</strong> → generezi raportul zilnic oficial
+      </div>
+    </div>
+  </div>
+  <div class="sh"><div class="sh-dot"></div><span class="sh-lbl">📲 Instalare iOS</span></div>
+  <div class="card">
+    <div class="cr" style="flex-direction:column;align-items:flex-start;gap:6px">
+      <div style="font-size:13px;color:var(--text2);line-height:1.65">
+        1. Deschide fișierul în <strong>Safari</strong><br>
+        2. Apasă <strong>↑ Partajare</strong><br>
+        3. Apasă <strong>„Adaugă la ecranul principal"</strong><br>
+        4. Apasă <strong>„Adaugă"</strong> — icoană nativă pe home screen ✅<br><br>
+        Funcționează <strong>100% offline</strong>. Date stocate local, nimic pe internet.
+      </div>
+    </div>
+  </div>
+  <div class="sh"><div class="sh-dot"></div><span class="sh-lbl">⚠️ Date salvate</span></div>
+  <div class="card">
+    <div class="cr"><span class="cl">Schimburi salvate total</span><span style="font-size:18px;font-weight:800;color:var(--accent)" id="iCount">0</span></div>
+    <div class="cr">
+      <button onclick="if(confirm('Ștergi TOATE datele?')){localStorage.removeItem('rr3');showToast('✅ Toate datele șterse');updInfoCount()}" style="background:#fef2f2;color:#dc2626;border:none;border-radius:8px;padding:10px 16px;font-size:13px;font-weight:700;width:100%">🗑️ Șterge toate datele</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /area -->
+
+<!-- ACTION BAR -->
+<div class="act-bar" id="actBar">
+  <button class="abtn a-clr" onclick="clearForm()">🗑️</button>
+  <button class="abtn a-sav" onclick="saveShift()">💾 Salvează</button>
+  <button class="abtn a-pdf" onclick="showTab('day')">📊 Vezi Zi</button>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- PRINT VIEW -->
+<div id="pv"><div id="pvDoc"></div></div>
+
+<script>
+// ═══════════════════════════════════════════════════
+//  SECURITATE — PBKDF2 + Brute-force + Auto-lock
+// ═══════════════════════════════════════════════════
+
+// Parola stocată ca hash PBKDF2-SHA256 — textul original NU există în cod
+const _SEC = {
+  h: 'ed1e05a8d77ca9b1ebf2e7da96d4fba39f5f9e0b35f17b3c31c5c47f95b9ea39',
+  s: 'RAPTsalt\x247xNv2026\x21',
+  p: 'R4pT\x24xZ9\x21kLm2026',
+  i: 100000,
+  MAX_TRIES: 5,
+  LOCK_BASE: 30000  // 30s prima blocare, se dublează
+};
+
+// Rate limiting — stocăm în sessionStorage
+function _getAttempts(){ return JSON.parse(sessionStorage.getItem('_ra')||'{"n":0,"t":0,"lv":0}'); }
+function _setAttempts(o){ sessionStorage.setItem('_ra', JSON.stringify(o)); }
+
+function _isLockedOut(){
+  const a=_getAttempts();
+  if(a.n < _SEC.MAX_TRIES) return 0;
+  const wait = _SEC.LOCK_BASE * Math.pow(2, a.lv);  // 30s→1min→2min→4min...
+  const rem = Math.ceil((a.t + wait - Date.now()) / 1000);
+  return rem > 0 ? rem : 0;
+}
+
+alync function _hashPwd(raw){
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw', enc.encode(raw + _SEC.p), {name:'PBKDF2'}, false, ['deriveBits']
+  );
+  const bits = await crypto.subtle.deriveBits(
+    {name:'PBKDF2', salt:enc.encode(_SEC.s), iterations:_SEC.i, hash:'SHA-256'},
+    key, 256
+  );
+  return Array.from(new Uint8Array(bits)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+// Timing-safe compare (evită timing attacks)
+function _safeEq(a, b){
+  if(a.length !== b.length) return false;
+  let diff = 0;
+  for(let i=0; i<a.length; i++) diff |= a.charCodeAt(i)^b.charCodeAt(i);
+  return diff === 0;
+}
+
+async function checkPwd(){
+  const rem = _isLockedOut();
+  if(rem > 0){
+    document.getElementById('lockErr').textContent = `🔒 Blocat ${rem}s. Prea multe încercări.`;
+    return;
+  }
+  const v = document.getElementById('lockPwd').value;
+  document.getElementById('lockPwd').value = '';
+  document.getElementById('lockBtn').disabled = true;
+  document.getElementById('lockErr').textContent = '⏳ Verificare...';
+
+  try {
+    const hash = await _hashPwd(v);
+    if(_safeEq(hash, _SEC.h)){
+      const a = _getAttempts(); a.n=0; a.lv=0; _setAttempts(a);
+      sessionStorage.setItem('_ul','1');
+      sessionStorage.setItem('_ts', Date.now().toString());
+      document.getElementById('lock').classList.add('gone');
+      document.getElementById('lockErr').textContent='';
+      startInactivityTimer();
+    } else {
+      const a = _getAttempts();
+      a.n++; a.t = Date.now();
+      if(a.n >= _SEC.MAX_TRIES){ a.lv++; }
+      _setAttempts(a);
+      const left = _SEC.MAX_TRIES - a.n;
+      document.getElementById('lockErr').textContent =
+        left > 0 ? `❌ Parolă greșită (${left} încercări rămase)` : `🔒 Blocat. Prea multe încercări.`;
+      document.getElementById('lockPwd').focus();
+      setTimeout(()=>{ document.getElementById('lockErr').textContent=''; },3000);
+    }
+  } catch(e) {
+    document.getElementById('lockErr').textContent = '⚠️ Eroare. Reîncearcă.';
+  }
+  document.getElementById('lockBtn').disabled = false;
+}
+
+// ── AUTO-LOCK după 20 min inactivitate ──
+let _inactTimer;
+function startInactivityTimer(){
+  clearTimeout(_inactTimer);
+  _inactTimer = setTimeout(()=>{
+    sessionStorage.removeItem('_ul');
+    sessionStorage.removeItem('_ts');
+    document.getElementById('lock').classList.remove('gone');
+    document.getElementById('lockPwd').focus();
+    document.getElementById('lockErr').textContent = '🔒 Sesiune expirată. Reintroduceți parola.';
+    setTimeout(()=>{ document.getElementById('lockErr').textContent=''; },4000);
+  }, 20*60*1000);
+}
+function _resetTimer(){
+  if(sessionStorage.getItem('_ul')==='1') startInactivityTimer();
+}
+['touchstart','click','keydown','scroll'].forEach(e=>
+  document.addEventListener(e, _resetTimer, {passive:true})
+);
+
+// Verifică la load dacă sesiunea e validă
+(function checkSession(){
+  const ul = sessionStorage.getItem('_ul');
+  const ts = parseInt(sessionStorage.getItem('_ts')||'0');
+  const elapsed = Date.now() - ts;
+  if(ul==='1' && elapsed < 20*60*1000){
+    document.getElementById('lock').classList.add('gone');
+    startInactivityTimer();
+  } else {
+    sessionStorage.removeItem('_ul');
+    sessionStorage.removeItem('_ts');
+  }
+})();
+
+// ═══════════════════════════
+//  CONSTANTS & UTILS
+// ═══════════════════════════
+const DAYS_RO  = ['Duminică','Luni','Marți','Miercuri','Joi','Vineri','Sâmbătă'];
+const MONTHS_RO= ['ianuarie','februarie','martie','aprilie','mai','iunie','iulie','august','septembrie','octombrie','noiembrie','decembrie'];
+
+const $   = id => document.getElementById(id);
+const fv  = id => { const e=$(id); return e?e.value.trim():''; };
+const num = v  => { const n=parseInt(v); return isNaN(n)?0:n; };
+
+function todayISO(){
+  const d=new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function fmtShort(iso){
+  if(!iso)return'—';
+  const[y,m,d]=iso.split('-');return`${d}.${m}.${y}`;
+}
+function fmtLong(iso){
+  if(!iso)return'—';
+  const d=new Date(iso+'T12:00:00');
+  return`${DAYS_RO[d.getDay()]}, ${d.getDate()} ${MONTHS_RO[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+let toastT;
+function showToast(msg){
+  const t=$('toast');t.textContent=msg;t.classList.add('on');
+  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2400);
+}
+
+// ═══════════════════════════
+//  DARK MODE
+// ═══════════════════════════
+function toggleDark(){
+  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+  const next=isDark?'light':'dark';
+  document.documentElement.setAttribute('data-theme',next);
+  localStorage.setItem('rr3_theme',next);
+  $('darkBtn').textContent=next==='dark'?'☀️':'🌙';
+}
+(function initTheme(){
+  const t=localStorage.getItem('rr3_theme')||'light';
+  document.documentElement.setAttribute('data-theme',t);
+  // Button is in DOM at this point (script is at end of body)
+  const btn=document.getElementById('darkBtn');
+  if(btn)btn.textContent=t==='dark'?'☀️':'🌙';
+})();
+
+// ═══════════════════════════
+//  TABS
+// ═══════════════════════════
+function showTab(name){
+  ['form','day','arch','graf','info'].forEach(n=>{
+    $('tb-'+n).classList.toggle('active',n===name);
+    $('scr-'+n).classList.toggle('active',n===name);
+  });
+  $('actBar').classList.toggle('hidden', name!=='form');
+  if(name==='day')  initDayTab();
+  if(name==='arch') loadArch();
+  if(name==='graf') loadGrafice();
+  if(name==='info') updInfoCount();
+}
+
+// ═══════════════════════════
+//  DATE
+// ═══════════════════════════
+function setDateDisp(iso){
+  $('datDisp').textContent=fmtLong(iso);
+  const d=new Date(iso+'T12:00:00');
+  $('hDay').textContent=DAYS_RO[d.getDay()];
+  $('hDate').textContent=fmtShort(iso);
+  updateShiftStatus(iso);
+}
+function toggleDP(){
+  const w=$('dpWrap'),open=w.style.display==='block';
+  w.style.display=open?'none':'block';
+  if(!open)$('f_date').focus();
+}
+function onDateChg(){
+  const iso=fv('f_date');
+  if(iso){setDateDisp(iso);$('dpWrap').style.display='none';updateShiftStatus(iso);}
+}
+
+// ═══════════════════════════
+//  SHIFT SELECTOR
+// ═══════════════════════════
+let curShift=1;
+
+function selShift(n){
+  // Auto-save current shift before switching
+  const curIso=fv('f_date')||todayISO();
+  const hasData=FIELDS.some(id=>fv(id)!=='');
+  if(hasData){
+    const d=getFormData();
+    if(d.date){
+      let arr=getAllShifts();
+      const idx=arr.findIndex(s=>s.date===d.date&&s.shift===d.shift);
+      if(idx>=0) arr[idx]=d; else arr.push(d);
+      putAllShifts(arr);
+      updateShiftStatus(d.date);
+    }
+  }
+  curShift=n;
+  [1,2,3].forEach(i=>{
+    $('sBtn'+i).classList.toggle('sel',i===n);
+  });
+  // load existing data for this shift+date
+  const iso=fv('f_date')||todayISO();
+  const existing=getShift(iso,n);
+  if(existing) loadIntoForm(existing);
+  else clearFields();
+  liveSum();
+}
+
+function updateShiftStatus(iso){
+  [1,2,3].forEach(i=>{
+    const exists=!!getShift(iso,i);
+    $('ss'+i).textContent=exists?'✅ salvat':'—';
+  });
+}
+
+// ═══════════════════════════
+//  LIVE SUMMARY
+// ═══════════════════════════
+function liveSum(){
+  $('lv_pv').textContent=num(fv('f_pv'));
+  $('lv_ts').textContent=num(fv('f_ts'));
+  $('lv_av').textContent=num(fv('f_av'));
+}
+
+// ═══════════════════════════
+//  FORM FIELDS
+// ═══════════════════════════
+const FIELDS=[
+  'f_pol','f_pat','f_cpen','f_aact','f_adisp',
+  'f_pv','f_ts','f_av','f_val',
+  'f_vit','f_cent','f_ldoc','f_lum','f_opr','f_tel','f_altab','f_asm',
+  'f_piet','f_bic','f_trot','f_moto','f_mop','f_car',
+  'f_aan','f_l132','f_og43','f_og37','f_hg1317','f_hg1373','f_l38',
+  'f_edac1','f_edac2','f_alc1','f_alc2','f_drog',
+  'f_snrip1','f_snrip2','f_snria1','f_snria2','f_int',
+  'f_ptot','f_pv50','f_pv70','f_palc','f_pdep','f_ptel','f_pexp','f_pagr',
+  'f_ppp','f_ppv','f_psem','f_pcf','f_pdt1','f_pdt2','f_pnd1','f_pnd2',
+  'f_ctot','f_citp','f_cdt','f_calt',
+  'f_arpm','f_sdp','f_accgr','f_accus',
+  'f_a334','f_a335','f_a3361','f_a3362','f_a337','f_a338',
+  'f_ri','f_aviz'
+];
+
+function getFormData(){
+  const d={date:fv('f_date'),shift:curShift,f_ofiter:fv('f_ofiter')};
+  FIELDS.forEach(id=>{d[id]=fv(id);});
+  return d;
+}
+
+function loadIntoForm(d){
+  FIELDS.forEach(id=>{const e=$(id);if(e&&d[id]!==undefined)e.value=d[id];});
+  const of=$('f_ofiter');if(of)of.value=d.f_ofiter||'';
+}
+
+function clearFields(){
+  FIELDS.forEach(id=>{const e=$(id);if(e)e.value='';});
+  const of=$('f_ofiter');if(of)of.value='';
+}
+
+function clearForm(){
+  if(!confirm('Ștergi câmpurile schimbului curent?'))return;
+  clearFields();liveSum();showToast('🗑️ Câmpuri șterse');
+}
+
+// ═══════════════════════════
+//  STORAGE
+// ═══════════════════════════
+function getAllShifts(){ return JSON.parse(localStorage.getItem('rr3')||'[]'); }
+function putAllShifts(arr){ localStorage.setItem('rr3',JSON.stringify(arr)); }
+
+function getShift(date,shift){
+  return getAllShifts().find(s=>s.date===date&&s.shift===shift)||null;
+}
+
+function saveShift(){
+  const d=getFormData();
+  if(!d.date){showToast('⚠️ Selectează data!');return;}
+  let arr=getAllShifts();
+  const idx=arr.findIndex(s=>s.date===d.date&&s.shift===d.shift);
+  if(idx>=0) arr[idx]=d;
+  else arr.push(d);
+  putAllShifts(arr);
+  updateShiftStatus(d.date);
+  showToast(`✅ Schimb ${['I','II','III'][d.shift-1]} salvat!`);
+}
+
+// Sum all numeric fields across shifts for a date
+function sumDay(date){
+  const shifts=getAllShifts().filter(s=>s.date===date);
+  if(!shifts.length) return null;
+  const tot={date,shiftsPresent:shifts.map(s=>s.shift).sort()};
+  FIELDS.forEach(id=>{
+    if(id==='f_val'){
+      // sum amenzi values (parse Romanian number format)
+      let s=0;
+      shifts.forEach(sh=>{
+        const v=(sh[id]||'').replace(/\./g,'').replace(',','.');
+        const n=parseFloat(v);
+        if(!isNaN(n))s+=n;
+      });
+      tot[id]=s>0?s.toLocaleString('ro-RO',{minimumFractionDigits:1,maximumFractionDigits:1}):'';
+    } else {
+      let s=0;
+      shifts.forEach(sh=>{s+=num(sh[id]||0);});
+      tot[id]=s||'';
+    }
+  });
+  // Auto-calculate medie sancțiuni/polițist
+  const polTot=num(tot.f_pol);
+  const snTot=num(tot.f_ts);
+  if(polTot>0) tot.f_med=(snTot/polTot).toFixed(2);
+  else tot.f_med='0';
+  return tot;
+}
+
+function getUniqueDates(){
+  const all=getAllShifts();
+  return [...new Set(all.map(s=>s.date))].sort((a,b)=>b.localeCompare(a));
+}
+
+// ═══════════════════════════
+//  DAY TAB
+// ═══════════════════════════
+function initDayTab(){
+  const dates=getUniqueDates();
+  const sel=$('daySelect');
+  const cur=sel.value;
+  sel.innerHTML='';
+  if(!dates.length){
+    sel.innerHTML='<option value="">— nicio zi salvată —</option>';
+    $('dayContent').innerHTML='<div class="empty"><div class="ei">📊</div><div class="et">Nu există date salvate.<br>Completează mai întâi schimburile.</div></div>';
+    [1,2,3].forEach(i=>{
+      $('ds'+i).className='ss-box ss-miss';
+      $('ds'+i+'s').textContent='lipsă';
+    });
+    return;
+  }
+  dates.forEach(d=>{
+    const o=document.createElement('option');
+    o.value=d; o.textContent=fmtLong(d);
+    if(d===cur||(!cur&&d===dates[0]))o.selected=true;
+    sel.appendChild(o);
+  });
+  loadDaySummary();
+}
+
+function loadDaySummary(){
+  const date=$('daySelect').value;
+  if(!date) return;
+  const shifts=getAllShifts().filter(s=>s.date===date);
+  const tot=sumDay(date);
+
+  // shift status boxes
+  [1,2,3].forEach(i=>{
+    const has=shifts.some(s=>s.shift===i);
+    $('ds'+i).className='ss-box '+(has?'ss-done':'ss-miss');
+    $('ds'+i+'s').textContent=has?'✅ completat':'lipsă';
+  });
+
+  if(!tot){$('dayContent').innerHTML='';return;}
+
+  const cv=v=>v||'';
+  const row=(lbl,val,big)=>`<tr><td class="tk">${lbl}</td><td class="tv${big?' big':''}">${val}</td></tr>`;
+
+  $('dayContent').innerHTML=`
+    <!-- TOTALE PRINCIPALE -->
+    <div class="tot-sec">
+      <div class="tot-sec-hdr">📊 Totale zilei — ${fmtShort(date)}</div>
+      <table class="tot-table">
+        ${row('Procese verbale întocmite', cv(tot.f_pv), true)}
+        ${row('Total sancțiuni aplicate', cv(tot.f_ts), true)}
+        ${row('Avertismente', cv(tot.f_av))}
+        ${row('Valoare amenzi', cv(tot.f_val)?cv(tot.f_val)+' lei':'')}
+        ${row('Polițiști în serviciu (total)', cv(tot.f_pol))}
+        <tr><td class="tk" style="font-weight:700;color:var(--primary)">Medie sancțiuni/polițist <span style="color:#16a34a;font-size:11px">(auto-calculat)</span></td><td class="tv big" style="color:var(--success)">${tot.f_med}</td></tr>
+      </table>
+    </div>
+
+    <!-- ABATERI -->
+    <div class="tot-sec">
+      <div class="tot-sec-hdr">🚗 Abateri totale</div>
+      <table class="tot-table">
+        ${row('Viteză', cv(tot.f_vit))}
+        ${row('Centuri de siguranță', cv(tot.f_cent))}
+        ${row('Lipsă Documente', cv(tot.f_ldoc))}
+        ${row('Lumini', cv(tot.f_lum))}
+        ${row('Opriri/Staționări', cv(tot.f_opr))}
+        ${row('Telefon mobil', cv(tot.f_tel))}
+        ${row('Alte abateri', cv(tot.f_altab))}
+        ${row('ASM', cv(tot.f_asm))}
+      </table>
+    </div>
+
+    <!-- PERMISE + CERTIFICATE -->
+    <div class="tot-sec">
+      <div class="tot-sec-hdr">🪪 Permise & Certificate</div>
+      <table class="tot-table">
+        ${row('Total permise reținute', cv(tot.f_ptot), true)}
+        ${row('Total certificate reținute', cv(tot.f_ctot), true)}
+        ${row('ITP / Înmatric. susp.', cv(tot.f_citp))}
+      </table>
+    </div>
+
+    <!-- VERIFICARI -->
+    <div class="tot-sec">
+      <div class="tot-sec-hdr">🔬 Verificări & Testări</div>
+      <table class="tot-table">
+        ${row('Verificări EDAC (1/2)', cv(tot.f_edac1)+' / '+cv(tot.f_edac2))}
+        ${row('Testări alcool (1/2)', cv(tot.f_alc1)+' / '+cv(tot.f_alc2))}
+        ${row('Testări droguri', cv(tot.f_drog))}
+        ${row('SNRI-persoane (1/2)', cv(tot.f_snrip1)+' / '+cv(tot.f_snrip2))}
+        ${row('SNRI-auto (1/2)', cv(tot.f_snria1)+' / '+cv(tot.f_snria2))}
+        ${row('Intervenții sesizări', cv(tot.f_int))}
+      </table>
+    </div>
+
+    <!-- INFRACTIUNI -->
+    <div class="tot-sec">
+      <div class="tot-sec-hdr">⚖️ Infracțiuni constatate</div>
+      <table class="tot-table">
+        ${row('Art. 334', cv(tot.f_a334))} ${row('Art. 335', cv(tot.f_a335))}
+        ${row('Art. 336/1', cv(tot.f_a3361))} ${row('Art. 336/2', cv(tot.f_a3362))}
+        ${row('Art. 337', cv(tot.f_a337))} ${row('Art. 338', cv(tot.f_a338))}
+      </table>
+    </div>
+
+    <!-- PDF BUTTON -->
+    <button onclick="genPDF('${date}')" style="width:100%;background:var(--success);color:#fff;border:none;border-radius:12px;padding:15px;font-size:15px;font-weight:700;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:8px">
+      📄 Generează PDF Raport Zilnic
+    </button>
+    <div style="text-align:center;font-size:11px;color:var(--text2);margin-top:6px">
+      Schimburi incluse: ${tot.shiftsPresent.map(n=>['I','II','III'][n-1]).join(', ')} · Medie calculată automat
+    </div>
+  `;
+}
+
+// ═══════════════════════════
+//  ARCHIVE
+// ═══════════════════════════
+function loadArch(){
+  const dates=getUniqueDates();
+  const cont=$('archList');
+  if(!dates.length){
+    cont.innerHTML=`<div class="empty"><div class="ei">📋</div><div class="et">Nu există date salvate.</div></div>`;
+    return;
+  }
+  cont.innerHTML=dates.map(date=>{
+    const shifts=getAllShifts().filter(s=>s.date===date);
+    const tot=sumDay(date);
+    const badges=[1,2,3].map(i=>{
+      const sh=shifts.find(s=>s.shift===i);
+      const has=!!sh;
+      const nm=has&&sh.f_ofiter?` · ${sh.f_ofiter}`:'';
+      return `<span class="ri-sbadge ${has?'ri-s'+i:'ri-miss'}">${has?(['I','II','III'][i-1]+nm):'—'}</span>`;
+    }).join('');
+    return `
+      <div class="ri">
+        <div class="ri-left">
+          <div class="ri-date">${fmtLong(date)}</div>
+          <div class="ri-meta">PV: ${tot?.f_pv||'—'} · Sancț: ${tot?.f_ts||'—'} · Amenzi: ${tot?.f_val||'—'} lei</div>
+          <div class="ri-shifts">${badges}</div>
+        </div>
+        <div class="ri-actions">
+          <button class="ribtn ribtn-v" onclick="showTab('day');setTimeout(()=>{$('daySelect').value='${date}';loadDaySummary();},100)" title="Vezi zi">👁️</button>
+          <button class="ribtn ribtn-p" onclick="genPDF('${date}')" title="PDF">🖨️</button>
+          <button class="ribtn ribtn-d" onclick="delDay('${date}')" title="Șterge">🗑️</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function delDay(date){
+  if(!confirm(`Ștergi toate schimburile din ${fmtShort(date)}?`))return;
+  let arr=getAllShifts().filter(s=>s.date!==date);
+  putAllShifts(arr);
+  loadArch();
+  showToast('🗑️ Zi ștearsă');
+}
+
+function updInfoCount(){$('iCount').textContent=getAllShifts().length;}
+
+// ═══════════════════════════
+//  PDF GENERATION
+// ═══════════════════════════
+function genPDF(date){
+  const d=sumDay(date);
+  if(!d){showToast('⚠️ Nicio dată pentru această zi');return;}
+  buildDoc(d);
+  setTimeout(()=>window.print(),350);
+}
+
+function cv(v){return v||'';}
+
+function buildDoc(d){
+  const dateStr=fmtShort(d.date);
+  $('pvDoc').innerHTML=`
+<div style="font-family:'Times New Roman',Times,serif;font-size:9pt;color:#000;">
+  <div style="text-align:center;margin-bottom:5pt">
+    <div style="font-size:11.5pt;font-weight:bold;text-decoration:underline;">POLIȚIA MUNICIPIULUI ARAD – BIROUL RUTIER</div>
+    <div style="font-size:11pt;font-weight:bold;margin-top:2pt;">SINTEZA ACTIVITĂȚILOR DIN DATA DE ${dateStr}</div>
+    <div style="font-size:8.5pt;font-style:italic;margin-top:3pt;">Azi, data de mai sus, efectivele Biroului Rutier au desfășurat următoarele activități:</div>
+  </div>
+  <div style="margin:4pt 25pt 6pt;font-size:9pt;">
+    <div style="display:flex;margin-bottom:2pt"><span style="flex:1">Polițiști în serviciu</span><span>= ${cv(d.f_pol)}</span></div>
+    <div style="display:flex;margin-bottom:2pt"><span style="flex:1">Dintre care la:&nbsp;&nbsp;&nbsp;- Patrulare</span><span>= ${cv(d.f_pat)}</span></div>
+    <div style="display:flex;margin-bottom:2pt"><span style="flex:1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Cercetări penale</span><span>=${cv(d.f_cpen)||'0'}</span></div>
+    <div style="display:flex;margin-bottom:2pt"><span style="flex:1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- alte activități</span><span>=${cv(d.f_aact)||'0'}</span></div>
+    <div style="display:flex;margin-bottom:2pt"><span style="flex:1">Acțiuni dispuse:</span><span>=${cv(d.f_adisp)||'0'}</span></div>
+  </div>
+  <table style="width:100%;border-collapse:collapse;font-size:7.8pt;margin-bottom:5pt;">
+    <tbody>
+    <tr>
+      <td style="border:1px solid #000;padding:2pt 3pt;font-weight:bold;width:14%">Procese verbale întocmite</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;font-weight:bold;font-size:10.5pt;width:5%">${cv(d.f_pv)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;font-weight:bold;width:11%">Alte acte normative</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;font-weight:bold;width:4%">${cv(d.f_aan)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;font-weight:bold;width:13%">Permise de conducere:</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;font-weight:bold;font-size:10.5pt;width:4%">${cv(d.f_ptot)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;font-weight:bold;width:13%">Certificate de înmatriculare</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;font-weight:bold;font-size:10.5pt;width:4%">${cv(d.f_ctot)}</td>
+    </tr>
+    <tr>
+      <td style="border:1px solid #000;padding:2pt 3pt;font-weight:bold;">Total sancțiuni aplicate</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;font-weight:bold;font-size:10.5pt;">${cv(d.f_ts)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;">L. 132/2017 <em>(RCA)</em></td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_l132)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;">-viteză +50</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_pv50)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;">I.T.P. sau înmatric. susp.</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_citp)}</td>
+    </tr>
+    <tr>
+      <td style="border:1px solid #000;padding:2pt 3pt;font-weight:bold;">Avertismente</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;font-weight:bold;font-size:10.5pt;">${cv(d.f_av)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;">O.G. 43/1997</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_og43)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;">-viteză +70</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_pv70)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;">defecțiuni tehnice</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_cdt)}</td>
+    </tr>
+    <tr>
+      <td style="border:1px solid #000;padding:2pt 3pt;font-weight:bold;">Valoare amenzi</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;font-weight:bold;">${d.f_val?d.f_val+' lei':''}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;">O.G. 37/2007</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_og37)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;">-alcool</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_palc)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;">altele</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_calt)}</td>
+    </tr>
+    <tr>
+      <td style="border:1px solid #000;padding:2pt 3pt;">Viteză</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;font-weight:bold;">${cv(d.f_vit)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;">H.G.1317/2023</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_hg1317)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;">-depășire</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_pdep)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;font-weight:bold;" rowspan="2">A.R.P.M.</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;" rowspan="2">${cv(d.f_arpm)}</td>
+    </tr>
+    <tr>
+      <td style="border:1px solid #000;padding:2pt 3pt;">Centuri de siguranță</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;font-weight:bold;">${cv(d.f_cent)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;font-weight:bold;">Alți participanți</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;"></td>
+      <td style="border:1px solid #000;padding:2pt 3pt;">-telefon mobil</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_ptel)}</td>
+    </tr>
+    <tr>
+      <td style="border:1px solid #000;padding:2pt 3pt;">Lipsă Documente</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;font-weight:bold;">${cv(d.f_ldoc)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;">pietoni</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_piet)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;">-expirate</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_pexp)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;font-weight:bold;" rowspan="2">Soluții în DP</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;" rowspan="2">${cv(d.f_sdp)}</td>
+    </tr>
+    <tr>
+      <td style="border:1px solid #000;padding:2pt 3pt;">Lumini</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;font-weight:bold;">${cv(d.f_lum)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;">bicicliști</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_bic)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;">-conducere agresivă</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_pagr)}</td>
+    </tr>
+    <tr>
+      <td style="border:1px solid #000;padding:2pt 3pt;">Opriri/stationări</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;font-weight:bold;">${cv(d.f_opr)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;">cond. trotinete</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_trot)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;">-prioritate pietoni</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_ppp)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;font-weight:bold;" rowspan="2">Accidente grave cercetate</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;" rowspan="2">${cv(d.f_accgr)}</td>
+    </tr>
+    <tr>
+      <td style="border:1px solid #000;padding:2pt 3pt;">Telefon mobil</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;font-weight:bold;">${cv(d.f_tel)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;font-weight:bold;">Verificări EDAC</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_edac1)}<br>${cv(d.f_edac2)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;">-prioritate vehicule</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_ppv)}</td>
+    </tr>
+    <tr>
+      <td style="border:1px solid #000;padding:2pt 3pt;">Alte abateri</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;font-weight:bold;">${cv(d.f_altab)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;">motocicliști</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_moto)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;">-semafor</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_psem)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;font-weight:bold;" rowspan="2">Accidente ușoare cercetare</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;" rowspan="2">${cv(d.f_accus)}</td>
+    </tr>
+    <tr>
+      <td style="border:1px solid #000;padding:2pt 3pt;"></td>
+      <td style="border:1px solid #000;padding:2pt 3pt;"></td>
+      <td style="border:1px solid #000;padding:2pt 3pt;font-weight:bold;">Testări alcool</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_alc1)}<br>${cv(d.f_alc2)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;">-cale ferată</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_pcf)}</td>
+    </tr>
+    <tr>
+      <td style="border:1px solid #000;padding:2pt 3pt;">ASM</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;font-weight:bold;">${cv(d.f_asm)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;">mopediști</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_mop)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;">-defecțiuni tehnice</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_pdt1)}<br>${cv(d.f_pdt2)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;">L. 38/2003 (taxi)</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_l38)}</td>
+    </tr>
+    <tr>
+      <td style="border:1px solid #000;padding:2pt 3pt;"></td>
+      <td style="border:1px solid #000;padding:2pt 3pt;"></td>
+      <td style="border:1px solid #000;padding:2pt 3pt;font-weight:bold;">Testări droguri</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_drog)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;">-neresp. disp. polițist</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_pnd1)}<br>${cv(d.f_pnd2)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;">H.G. 1373/2008</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_hg1373)}</td>
+    </tr>
+    <tr>
+      <td style="border:1px solid #000;padding:2pt 3pt;"></td>
+      <td style="border:1px solid #000;padding:2pt 3pt;"></td>
+      <td style="border:1px solid #000;padding:2pt 3pt;font-weight:bold;">SNRI-persoane</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_snrip1)}<br>${cv(d.f_snrip2)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;"></td><td style="border:1px solid #000;padding:2pt 3pt;"></td>
+      <td style="border:1px solid #000;padding:2pt 3pt;"></td><td style="border:1px solid #000;padding:2pt 3pt;"></td>
+    </tr>
+    <tr>
+      <td style="border:1px solid #000;padding:2pt 3pt;"></td>
+      <td style="border:1px solid #000;padding:2pt 3pt;"></td>
+      <td style="border:1px solid #000;padding:2pt 3pt;">căruțași</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_car)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;"></td><td style="border:1px solid #000;padding:2pt 3pt;"></td>
+      <td style="border:1px solid #000;padding:2pt 3pt;"></td><td style="border:1px solid #000;padding:2pt 3pt;"></td>
+    </tr>
+    <tr>
+      <td style="border:1px solid #000;padding:2pt 3pt;"></td>
+      <td style="border:1px solid #000;padding:2pt 3pt;"></td>
+      <td style="border:1px solid #000;padding:2pt 3pt;font-weight:bold;">SNRI-auto</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_snria1)}<br>${cv(d.f_snria2)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;"></td><td style="border:1px solid #000;padding:2pt 3pt;"></td>
+      <td style="border:1px solid #000;padding:2pt 3pt;"></td><td style="border:1px solid #000;padding:2pt 3pt;"></td>
+    </tr>
+    <tr>
+      <td style="border:1px solid #000;padding:2pt 3pt;"></td>
+      <td style="border:1px solid #000;padding:2pt 3pt;"></td>
+      <td style="border:1px solid #000;padding:2pt 3pt;font-weight:bold;">Intervenții la sesizări</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_int)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;"></td><td style="border:1px solid #000;padding:2pt 3pt;"></td>
+      <td style="border:1px solid #000;padding:2pt 3pt;"></td><td style="border:1px solid #000;padding:2pt 3pt;"></td>
+    </tr>
+    </tbody>
+  </table>
+  <div style="margin-bottom:4pt;">
+    <div style="font-weight:bold;font-size:10pt;margin-bottom:3pt;">Infracțiuni constatate</div>
+    <table style="width:100%;border-collapse:collapse;font-size:8.5pt;">
+      <tr>
+        <td style="border:1px solid #000;padding:3pt;text-align:center;">Art. 334</td>
+        <td style="border:1px solid #000;padding:3pt;text-align:center;">Art. 335</td>
+        <td style="border:1px solid #000;padding:3pt;text-align:center;">Art. 336/1</td>
+        <td style="border:1px solid #000;padding:3pt;text-align:center;">Art. 336/2</td>
+        <td style="border:1px solid #000;padding:3pt;text-align:center;">Art. 337</td>
+        <td style="border:1px solid #000;padding:3pt;text-align:center;">Art. 338</td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #000;padding:7pt 3pt;text-align:center;">${cv(d.f_a334)}</td>
+        <td style="border:1px solid #000;padding:7pt 3pt;text-align:center;">${cv(d.f_a335)}</td>
+        <td style="border:1px solid #000;padding:7pt 3pt;text-align:center;">${cv(d.f_a3361)}</td>
+        <td style="border:1px solid #000;padding:7pt 3pt;text-align:center;">${cv(d.f_a3362)}</td>
+        <td style="border:1px solid #000;padding:7pt 3pt;text-align:center;">${cv(d.f_a337)}</td>
+        <td style="border:1px solid #000;padding:7pt 3pt;text-align:center;">${cv(d.f_a338)}</td>
+      </tr>
+    </table>
+  </div>
+  <div style="margin-top:7pt;font-size:9.5pt;">
+    <div style="display:flex;margin-bottom:2pt"><span style="font-weight:bold;min-width:210pt">Medie sancțiuni/polițist</span><span>=${d.f_med||'0'}</span></div>
+    <div style="display:flex;margin-bottom:2pt"><span style="font-weight:bold;min-width:210pt">Rapoarte Informative</span><span>=${cv(d.f_ri)||'0'}</span></div>
+    <div style="display:flex;margin-bottom:2pt"><span style="font-weight:bold;min-width:210pt">Avize sistematizare acordate</span><span>=${cv(d.f_aviz)||'0'}</span></div>
+  </div>
+</div>`;
+}
+
+// ═══════════════════════════
+//  CSV EXPORT
+// ═══════════════════════════
+function exportCSV(){
+  const all=getAllShifts();
+  if(!all.length){showToast('⚠️ Nu există date de exportat');return;}
+  const headers=['Data','Schimb','Ofițer','PV','Sancțiuni','Avertismente','Valoare Amenzi',
+    'Polițiști','Viteză7,'Centuri','Lipsă Documente','Lumini','Opriri','Telefon',
+    'Alte abateri','ASM','Permise total','Certificate total','Testări alcool 1',
+    'Testări alcool 2','Testări droguri','Accidente grave','Accidente ușoare',
+    'Art.334','Art.335','Art.336/1','Art.336/2','Art.337','Art.338'];
+  const rows=all.slice().sort((a,b)=>a.date.localeCompare(b.date)||(a.shift-b.shift)).map(s=>[
+    fmtShort(s.date),['I','II','III'][s.shift-1]||s.shift,s.f_ofiter||'',
+    num(s.f_pv),num(s.f_ts),num(s.f_av),s.f_val||'0',
+    num(s.f_pol),num(s.f_vit),num(s.f_cent),num(s.f_ldoc),num(s.f_lum),
+    num(s.f_opr),num(s.f_tel),num(s.f_altab),num(s.f_asm),
+    num(s.f_ptot),num(s.f_ctot),num(s.f_alc1),num(s.f_alc2),num(s.f_drog),
+    num(s.f_accgr),num(s.f_accus),
+    num(s.f_a334),num(s.f_a335),num(s.f_a3361),num(s.f_a3362),num(s.f_a337),num(s.f_a338)
+  ].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(','));
+  const csv='\uFEFF'+[headers.join(','),...rows].join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`BiroulRutier_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('✅ CSV exportat!');
+}
+
+// ═══════════════════════════
+//  PERIOD REPORT (7/30 days / current week / current month)
+// ═══════════════════════════
+function getPeriodDates(period){
+  const today=new Date();today.setHours(12,0,0,0);
+  let start=new Date(today);
+  if(period==='7'){start.setDate(today.getDate()-6);}
+  else if(period==='30'){start.setDate(today.getDate()-29);}
+  else if(period==='week'){
+    const d=today.getDay();const diff=d===0?6:d-1;
+    start.setDate(today.getDate()-diff);
+  }else if(period==='month'){
+    start=new Date(today.getFullYear(),today.getMonth(),1);start.setHours(12,0,0,0);
+  }
+  const isoStart=`${start.getFullYear()}-${String(start.getMonth()+1).padStart(2,'0')}-${String(start.getDate()).padStart(2,'0')}`;
+  const isoEnd=`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+  return {isoStart,isoEnd};
+}
+
+function genPeriodReport(){
+  const period=$('periodSelect').value;
+  const {isoStart,isoEnd}=getPeriodDates(period);
+  const dates=getUniqueDates().filter(d=>d>=isoStart&&d<=isoEnd);
+  if(!dates.length){showToast('⚠️ Nicio zi în această perioadă');return;}
+
+  // Aggregate all days
+  const agg={f_pv:0,f_ts:0,f_av:0,f_pol:0,f_ptot:0,f_ctot:0,
+    f_vit:0,f_cent:0,f_ldoc:0,f_lum:0,f_opr:0,f_tel:0,f_altab:0,f_asm:0,
+    f_alc1:0,f_alc2:0,f_drog:0,f_accgr:0,f_accus:0,
+    f_a334:0,f_a335:0,f_a3361:0,f_a3362:0,f_a337:0,f_a338:0,
+    f_arpm:0,f_sdp:0,f_int:0,f_ri:0,f_aviz:0,f_val:0};
+  let zileCompletate=0;
+  dates.forEach(date=>{
+    const tot=sumDay(date);
+    if(!tot)return;
+    zileCompletate++;
+    Object.keys(agg).forEach(k=>{
+      if(k==='f_val'){
+        const v=(tot[k]||'').replace(/\./g,'').replace(',','.');
+        agg[k]+=parseFloat(v)||0;
+      } else {
+        agg[k]+=num(tot[k]||0);
+      }
+    });
+  });
+
+  const polLbl=$('periodSelect').options[$('periodSelect').selectedIndex].text;
+  const valFmt=agg.f_val>0?agg.f_val.toLocaleString('ro-RO',{minimumFractionDigits:1,maximumFractionDigits:1}):'0';
+  const med=agg.f_pol>0?(agg.f_ts/agg.f_pol).toFixed(2):'0';
+
+  $('pvDoc').innerHTML=`
+<div style="font-family:'Times New Roman',Times,serif;font-size:9.5pt;color:#000;">
+  <div style="text-align:center;margin-bottom:8pt">
+    <div style="font-size:12pt;font-weight:bold;text-decoration:underline;">POLIȚIA MUNICIPIULUI ARAD – BIROUL RUTIER</div>
+    <div style="font-size:11pt;font-weight:bold;margin-top:3pt;">RAPORT PERIOADĂ: ${polLbl.toUpperCase()}</div>
+    <div style="font-size:9pt;margin-top:2pt;">${fmtShort(isoStart)} — ${fmtShort(isoEnd)}</div>
+    <div style="font-size:8.5pt;font-style:italic;margin-top:3pt;">Zile cu date completate: ${zileCompletate} din ${dates.length}</div>
+  </div>
+  <table style="width:100%;border-collapse:collapse;font-size:9pt;margin-bottom:8pt">
+    <tr style="background:#f0f0f0"><td style="border:1px solid #000;padding:4pt 6pt;font-weight:bold" colspan="4">SANCȚIUNI ȘI EFICACITATE</td></tr>
+    <tr><td style="border:1px solid #000;padding:3pt 6pt">Procese verbale întocmite</td><td style="border:1px solid #000;padding:3pt;text-align:center;font-weight:bold;font-size:11pt">${agg.f_pv}</td>
+        <td style="border:1px solid #000;padding:3pt 6pt">Total sancțiuni aplicate</td><td style="border:1px solid #000;padding:3pt;text-align:center;font-weight:bold;font-size:11pt">${agg.f_ts}</td></tr>
+    <tr><td style="border:1px solid #000;padding:3pt 6pt">Avertismente</td><td style="border:1px solid #000;padding:3pt;text-align:center">${agg.f_av}</td>
+        <td style="border:1px solid #000;padding:3pt 6pt">Valoare amenzi totale</td><td style="border:1px solid #000;padding:3pt;text-align:center;font-weight:bold">${valFmt} lei</td></tr>
+    <tr><td style="border:1px solid #000;padding:3pt 6pt">Total polițiști (cumulat)</td><td style="border:1px solid #000;padding:3pt;text-align:center">${agg.f_pol}</td>
+        <td style="border:1px solid #000;padding:3pt 6pt;font-weight:bold">Medie sancțiuni/polițist</td><td style="border:1px solid #000;padding:3pt;text-align:center;font-weight:bold;color:#155724">${med}</td></tr>
+    <tr style="background:#f0f0f0"><td style="border:1px solid #000;padding:4pt 6pt;font-weight:bold" colspan="4">ABATERI</td></tr>
+    <tr><td style="border:1px solid #000;padding:3pt 6pt">Viteză</td><td style="border:1px solid #000;padding:3pt;text-align:center">${agg.f_vit}</td>
+        <td style="border:1px solid #000;padding:3pt 6pt">Centuri siguranță</td><td style="border:1px solid #000;padding:3pt;text-align:center">${agg.f_cent}</td></tr>
+    <tr><td style="border:1px solid #000;padding:3pt 6pt">Lipsă documente</td><td style="border:1px solid #000;padding:3pt;text-align:center">${agg.f_ldoc}</td>
+        <td style="border:1px solid #000;padding:3pt 6pt">Telefon mobil</td><td style="border:1px solid #000;padding:3pt;text-align:center">${agg.f_tel}</td></tr>
+    <tr><td style="border:1px solid #000;padding:3pt 6pt">Lumini</td><td style="border:1px solid #000;padding:3pt;text-align:center">${agg.f_lum}</td>
+        <td style="border:1px solid #000;padding:3pt 6pt">Opriri/Staționări</td><td style="border:1px solid #000;padding:3pt;text-align:center">${agg.f_opr}</td></tr>
+    <tr><td style="border:1px solid #000;padding:3pt 6pt">Alte abateri</td><td style="border:1px solid #000;padding:3pt;text-align:center">${agg.f_altab}</td>
+        <td style="border:1px solid #000;padding:3pt 6pt">ASM</td><td style="border:1px solid #000;padding:3pt;text-align:center">${agg.f_asm}</td></tr>
+    <tr style="background:#f0f0f0"><td style="border:1px solid #000;padding:4pt 6pt;font-weight:bold" colspan="4">PERMISE, TESTĂRI & DIVERSE</td></tr>
+    <tr><td style="border:1px solid #000;padding:3pt 6pt">Permise reținute</td><td style="border:1px solid #000;padding:3pt;text-align:center;font-weight:bold">${agg.f_ptot}</td>
+        <td style="border:1px solid #000;padding:3pt 6pt">Certificate reținute</td><td style="border:1px solid #000;padding:3pt;text-align:center;font-weight:bold">${agg.f_ctot}</td></tr>
+    <tr><td style="border:1px solid #000;padding:3pt 6pt">Testări alcool (1)</td><td style="border:1px solid #000;padding:3pt;text-align:center">${agg.f_alc1}</td>
+        <td style="border:1px solid #000;padding:3pt 6pt">Testări droguri</td><td style="border:1px solid #000;padding:3pt;text-align:center">${agg.f_drog}</td></tr>
+    <tr><td style="border:1px solid #000;padding:3pt 6pt">Accidente grave cercetate</td><td style="border:1px solid #000;padding:3pt;text-align:center">${agg.f_accgr}</td>
+        <td style="border:1px solid #000;padding:3pt 6pt">Accidente ușoare cercetare</td><td style="border:1px solid #000;padding:3pt;text-align:center">${agg.f_accus}</td></tr>
+    <tr style="background:#f0f0f0"><td style="border:1px solid #000;padding:4pt 6pt;font-weight:bold" colspan="4">INFRACȚIUNI CONSTATATE</td></tr>
+    <tr>
+      <td style="border:1px solid #000;padding:3pt 6pt">Art. 334</td><td style="border:1px solid #000;padding:3pt;text-align:center">${agg.f_a334}</td>
+      <td style="border:1px solid #000;padding:3pt 6pt">Art. 335</td><td style="border:1px solid #000;padding:3pt;text-align:center">${agg.f_a335}</td>
+    </tr>
+    <tr>
+      <td style="border:1px solid #000;padding:3pt 6pt">Art. 336/1</td><td style="border:1px solid #000;padding:3pt;text-align:center">${agg.f_a3361}</td>
+      <td style="border:1px solid #000;padding:3pt 6pt">Art. 336/2</td><td style="border:1px solid #000;padding:3pt;text-align:center">${agg.f_a3362}</td>
+    </tr>
+    <tr>
+      <td style="border:1px solid #000;padding:3pt 6pt">Art. 337</td><td style="border:1px solid #000;padding:3pt;text-align:center">${agg.f_a337}</td>
+      <td style="border:1px solid #000;padding:3pt 6pt">Art. 338</td><td style="border:1px solid #000;padding:3pt;text-align:center">${agg.f_a338}</td>
+    </tr>
+  </table>
+  <div style="margin-top:10pt;font-size:9pt;border-top:1px solid #000;padding-top:6pt">
+    <strong>Rapoarte informative:</strong> ${agg.f_ri} &nbsp;&nbsp; <strong>Avize sistematizare:</strong> ${agg.f_aviz} &nbsp;&nbsp; <strong>A.R.P.M.:</strong> ${agg.f_arpm}
+  </div>
+  <div style="margin-top:16pt;font-size:8.5pt;color:#666;text-align:right">Generat: ${fmtLong(todayISO())}</div>
+</div>`;
+  setTimeout(()=>window.print(),350);
+}
+
+// ═══════════════════════════
+//  GRAFICE / CHARTS
+// ═══════════════════════════
+function loadGrafice(){
+  const allShifts=getAllShifts();
+  if(!allShifts.length){
+    $('grafStats').innerHTML='';
+    $('chartTrend').innerHTML='<div class="empty"><div class="ei">📈</div><div class="et">Nu există date salvate.</div></div>';
+    $('chartAbateri').innerHTML='<div class="empty"><div class="ei">🚗</div><div class="et">Nu există date salvate.</div></div>';
+    return;
+  }
+
+  // Last 14 days (or all if fewer)
+  const dates=getUniqueDates().slice(0,14).reverse();
+
+  // ── Stats totale cumulate ──
+  let totPV=0,totTS=0,totPol=0,totZile=dates.length;
+  dates.forEach(d=>{const t=sumDay(d);if(t){totPV+=num(t.f_pv);totTS+=num(t.f_ts);totPol+=num(t.f_pol);}});
+  const medGlobal=totPol>0?(totTS/totPol).toFixed(2):'0';
+  $('grafStats').innerHTML=`
+    <div class="stat-box"><div class="stat-v">${totPV}</div><div class="stat-l">PV total</div></div>
+    <div class="stat-box"><div class="stat-v">${totTS}</div><div class="stat-l">Sancțiuni</div></div>
+    <div class="stat-box"><div class="stat-v">${totZile}</div><div class="stat-l">Zile înreg.</div></div>
+    <div class="stat-box"><div class="stat-v">${medGlobal}</div><div class="stat-l">Med. sanc/pol</div></div>`;
+
+  // ── Trend chart (PV & Sancțiuni per day) ──
+  const trendData=dates.map(d=>{const t=sumDay(d)||{};return{d,pv:num(t.f_pv),ts:num(t.f_ts)};});
+  const maxVal=Math.max(...trendData.map(r=>Math.max(r.pv,r.ts)),1);
+
+  $('chartTrend').innerHTML=`
+    <div class="chart-legend">
+      <span class="leg-item"><span class="leg-dot" style="background:#3b82f6"></span>PV</span>
+      <span class="leg-item"><span class="leg-dot" style="background:#a78bfa"></span>Sancțiuni</span>
+    </div>
+    ${trendData.map(r=>`
+      <div class="bar-row">
+        <span class="bar-lbl">${fmtShort(r.d).slice(0,5)}</span>
+        <div style="flex:1;display:flex;flex-direction:column;gap:2px">
+          <div class="bar-wrap"><div class="bar-fill pv" style="width:${Math.round(r.pv/maxVal*100)}%"></div></div>
+          <div class="bar-wrap"><div class="bar-fill ts" style="width:${Math.round(r.ts/maxVal*100)}%"></div></div>
+        </div>
+        <span class="bar-val">${r.pv}/${r.ts}</span>
+      </div>`).join('')}`;
+
+  // ── Abateri breakdown ──
+  const ab={vit:0,cent:0,tel:0,ldoc:0,opr:0,lum:0,altab:0,asm:0};
+  allShifts.forEach(s=>{
+    ab.vit+=num(s.f_vit);ab.cent+=num(s.f_cent);ab.tel+=num(s.f_tel);
+    ab.ldoc+=num(s.f_ldoc);ab.opr+=num(s.f_opr);ab.lum+=num(s.f_lum);
+    ab.altab+=num(s.f_altab);ab.asm+=num(s.f_asm);
+  });
+  const abArr=[
+    {lbl:'Viteză',v:ab.vit,cls:'vit'},
+    {lbl:'Centuri',v:ab.cent,cls:'cent'},
+    {lbl:'Telefon',v:ab.tel,cls:'alt'},
+    {lbl:'Documente',v:ab.ldoc,cls:'ldoc'},
+    {lbl:'Opriri',v:ab.opr,cls:'opr'},
+    {lbl:'Lumini',v:ab.lum,cls:'alt'},
+    {lbl:'Alte ab.',v:ab.altab,cls:'alt'},
+    {lbl:'ASM',v:ab.asm,cls:'alt'}
+  ].sort((a,b)=>b.v-a.v);
+  const maxAb=Math.max(...abArr.map(r=>r.v),1);
+  $('chartAbateri').innerHTML=abArr.map(r=>`
+    <div class="bar-row">
+      <span class="bar-lbl">${r.lbl}</span>
+      <div class="bar-wrap"><div class="bar-fill ${r.cls}" style="width:${Math.round(r.v/maxAb*100)}%"></div></div>
+      <span class="bar-val">${r.v}</span>
+    </div>`).join('');
+}
+
+// ═══════════════════════════
+//  INIT
+// ═══════════════════════════
+
+// iOS Safari height fix — recalculate on resize (keyboard open/close)
+function fixHeight(){
+  document.body.style.height = window.innerHeight + 'px';
+}
+window.addEventListener('resize', fixHeight);
+fixHeight();
+
+window.addEventListener('load',()=>{
+  fixHeight();
+  setTimeout(()=>$('splash').classList.add('gone'), 900);
+  const today = todayISO();
+  $('f_date').value = today;
+  setDateDisp(today);
+  selShift(1);
+  liveSum();
+  // header clock — updates every minute
+  const updateHdr = () => {
+    const t = new Date();
+    $('hDay').textContent  = DAYS_RO[t.getDay()];
+    $('hDate').textContent = fmtShort(todayISO());
+  };
+  updateHdr();
+  setInterval(updateHdr, 60000);
+  // iOS: re-fix height after splash clears
+  setTimeout(fixHeight, 950);
+});
+</script>
+</body>
+</html>
