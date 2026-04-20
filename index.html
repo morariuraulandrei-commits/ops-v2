@@ -458,15 +458,11 @@ button{-webkit-appearance:none;appearance:none;cursor:pointer;border:none}
   <!-- VERIFICARI -->
   <div class="sh"><div class="sh-dot"></div><span class="sh-lbl">🔬 Verificări și testări</span></div>
   <div class="card">
-    <div class="cr"><span class="cl">Verificări EDAC<small>val. 1</small></span><input type="number" id="f_edac1" class="ci" min="0" placeholder="0"></div>
-    <div class="cr"><span class="cl">Verificări EDAC<small>val. 2</small></span><input type="number" id="f_edac2" class="ci" min="0" placeholder="0"></div>
-    <div class="cr"><span class="cl">Testări alcool<small>val. 1</small></span><input type="number" id="f_alc1" class="ci" min="0" placeholder="0"></div>
-    <div class="cr"><span class="cl">Testări alcool<small>val. 2</small></span><input type="number" id="f_alc2" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Verificări EDAC</span><input type="number" id="f_edac1" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Testări alcool</span><input type="number" id="f_alc1" class="ci" min="0" placeholder="0"></div>
     <div class="cr"><span class="cl">Testări droguri</span><input type="number" id="f_drog" class="ci" min="0" placeholder="0"></div>
-    <div class="cr"><span class="cl">SNRI-persoane<small>val. 1</small></span><input type="number" id="f_snrip1" class="ci" min="0" placeholder="0"></div>
-    <div class="cr"><span class="cl">SNRI-persoane<small>val. 2</small></span><input type="number" id="f_snrip2" class="ci" min="0" placeholder="0"></div>
-    <div class="cr"><span class="cl">SNRI-auto<small>val. 1</small></span><input type="number" id="f_snria1" class="ci" min="0" placeholder="0"></div>
-    <div class="cr"><span class="cl">SNRI-auto<small>val. 2</small></span><input type="number" id="f_snria2" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">SNRI-persoane</span><input type="number" id="f_snrip1" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">SNRI-auto</span><input type="number" id="f_snria1" class="ci" min="0" placeholder="0"></div>
     <div class="cr"><span class="cl">Intervenții la sesizări</span><input type="number" id="f_int" class="ci" min="0" placeholder="0"></div>
   </div>
 
@@ -485,10 +481,8 @@ button{-webkit-appearance:none;appearance:none;cursor:pointer;border:none}
     <div class="cr"><span class="cl">Prioritate vehicule</span><input type="number" id="f_ppv" class="ci" min="0" placeholder="0"></div>
     <div class="cr"><span class="cl">Semafor</span><input type="number" id="f_psem" class="ci" min="0" placeholder="0"></div>
     <div class="cr"><span class="cl">Cale ferată</span><input type="number" id="f_pcf" class="ci" min="0" placeholder="0"></div>
-    <div class="cr"><span class="cl">Defecțiuni tehnice<small>val. 1</small></span><input type="number" id="f_pdt1" class="ci" min="0" placeholder="0"></div>
-    <div class="cr"><span class="cl">Defecțiuni tehnice<small>val. 2</small></span><input type="number" id="f_pdt2" class="ci" min="0" placeholder="0"></div>
-    <div class="cr"><span class="cl">Neresp. disp. polițist<small>val. 1</small></span><input type="number" id="f_pnd1" class="ci" min="0" placeholder="0"></div>
-    <div class="cr"><span class="cl">Neresp. disp. polițist<small>val. 2</small></span><input type="number" id="f_pnd2" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Defecțiuni tehnice</span><input type="number" id="f_pdt1" class="ci" min="0" placeholder="0"></div>
+    <div class="cr"><span class="cl">Neresp. disp. polițist</span><input type="number" id="f_pnd1" class="ci" min="0" placeholder="0"></div>
   </div>
 
   <!-- CERTIFICATE -->
@@ -887,10 +881,10 @@ const FIELDS=[
   'f_vit','f_cent','f_ldoc','f_lum','f_opr','f_tel','f_altab','f_asm',
   'f_piet','f_bic','f_trot','f_moto','f_mop','f_car',
   'f_aan','f_l132','f_og43','f_og37','f_hg1317','f_hg1373','f_l38',
-  'f_edac1','f_edac2','f_alc1','f_alc2','f_drog',
-  'f_snrip1','f_snrip2','f_snria1','f_snria2','f_int',
+  'f_edac1','f_alc1','f_drog',
+  'f_snrip1','f_snria1','f_int',
   'f_ptot','f_pv50','f_pv70','f_palc','f_pdep','f_ptel','f_pexp','f_pagr',
-  'f_ppp','f_ppv','f_psem','f_pcf','f_pdt1','f_pdt2','f_pnd1','f_pnd2',
+  'f_ppp','f_ppv','f_psem','f_pcf','f_pdt1','f_pnd1',
   'f_ctot','f_citp','f_cdt','f_calt',
   'f_arpm','f_sdp','f_accgr','f_accus',
   'f_a334','f_a335','f_a3361','f_a3362','f_a337','f_a338',
@@ -1061,11 +1055,11 @@ function loadDaySummary(){
     <div class="tot-sec">
       <div class="tot-sec-hdr">🔬 Verificări & Testări</div>
       <table class="tot-table">
-        ${row('Verificări EDAC (1/2)', cv(tot.f_edac1)+' / '+cv(tot.f_edac2))}
-        ${row('Testări alcool (1/2)', cv(tot.f_alc1)+' / '+cv(tot.f_alc2))}
+        ${row('Verificări EDAC', cv(tot.f_edac1))}
+        ${row('Testări alcool', cv(tot.f_alc1))}
         ${row('Testări droguri', cv(tot.f_drog))}
-        ${row('SNRI-persoane (1/2)', cv(tot.f_snrip1)+' / '+cv(tot.f_snrip2))}
-        ${row('SNRI-auto (1/2)', cv(tot.f_snria1)+' / '+cv(tot.f_snria2))}
+        ${row('SNRI-persoane', cv(tot.f_snrip1))}
+        ${row('SNRI-auto', cv(tot.f_snria1))}
         ${row('Intervenții sesizări', cv(tot.f_int))}
       </table>
     </div>
@@ -1255,7 +1249,7 @@ function buildDoc(d){
       <td style="border:1px solid #000;padding:2pt 3pt;">Telefon mobil</td>
       <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;font-weight:bold;">${cv(d.f_tel)}</td>
       <td style="border:1px solid #000;padding:2pt 3pt;font-weight:bold;">Verificări EDAC</td>
-      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_edac1)}<br>${cv(d.f_edac2)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_edac1)}</td>
       <td style="border:1px solid #000;padding:2pt 3pt;">-prioritate vehicule</td>
       <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_ppv)}</td>
     </tr>
@@ -1273,7 +1267,7 @@ function buildDoc(d){
       <td style="border:1px solid #000;padding:2pt 3pt;"></td>
       <td style="border:1px solid #000;padding:2pt 3pt;"></td>
       <td style="border:1px solid #000;padding:2pt 3pt;font-weight:bold;">Testări alcool</td>
-      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_alc1)}<br>${cv(d.f_alc2)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_alc1)}</td>
       <td style="border:1px solid #000;padding:2pt 3pt;">-cale ferată</td>
       <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_pcf)}</td>
     </tr>
@@ -1283,7 +1277,7 @@ function buildDoc(d){
       <td style="border:1px solid #000;padding:2pt 3pt;">mopediști</td>
       <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_mop)}</td>
       <td style="border:1px solid #000;padding:2pt 3pt;">-defecțiuni tehnice</td>
-      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_pdt1)}<br>${cv(d.f_pdt2)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_pdt1)}</td>
       <td style="border:1px solid #000;padding:2pt 3pt;">L. 38/2003 (taxi)</td>
       <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_l38)}</td>
     </tr>
@@ -1293,7 +1287,7 @@ function buildDoc(d){
       <td style="border:1px solid #000;padding:2pt 3pt;font-weight:bold;">Testări droguri</td>
       <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_drog)}</td>
       <td style="border:1px solid #000;padding:2pt 3pt;">-neresp. disp. polițist</td>
-      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_pnd1)}<br>${cv(d.f_pnd2)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_pnd1)}</td>
       <td style="border:1px solid #000;padding:2pt 3pt;">H.G. 1373/2008</td>
       <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_hg1373)}</td>
     </tr>
@@ -1301,7 +1295,7 @@ function buildDoc(d){
       <td style="border:1px solid #000;padding:2pt 3pt;"></td>
       <td style="border:1px solid #000;padding:2pt 3pt;"></td>
       <td style="border:1px solid #000;padding:2pt 3pt;font-weight:bold;">SNRI-persoane</td>
-      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_snrip1)}<br>${cv(d.f_snrip2)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_snrip1)}</td>
       <td style="border:1px solid #000;padding:2pt 3pt;"></td><td style="border:1px solid #000;padding:2pt 3pt;"></td>
       <td style="border:1px solid #000;padding:2pt 3pt;"></td><td style="border:1px solid #000;padding:2pt 3pt;"></td>
     </tr>
@@ -1317,7 +1311,7 @@ function buildDoc(d){
       <td style="border:1px solid #000;padding:2pt 3pt;"></td>
       <td style="border:1px solid #000;padding:2pt 3pt;"></td>
       <td style="border:1px solid #000;padding:2pt 3pt;font-weight:bold;">SNRI-auto</td>
-      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_snria1)}<br>${cv(d.f_snria2)}</td>
+      <td style="border:1px solid #000;padding:2pt 3pt;text-align:center;">${cv(d.f_snria1)}</td>
       <td style="border:1px solid #000;padding:2pt 3pt;"></td><td style="border:1px solid #000;padding:2pt 3pt;"></td>
       <td style="border:1px solid #000;padding:2pt 3pt;"></td><td style="border:1px solid #000;padding:2pt 3pt;"></td>
     </tr>
@@ -1368,15 +1362,14 @@ function exportCSV(){
   if(!all.length){showToast('⚠️ Nu există date de exportat');return;}
   const headers=['Data','Schimb','Ofițer','PV','Sancțiuni','Avertismente','Valoare Amenzi',
     'Polițiști','Viteză','Centuri','Lipsă Documente','Lumini','Opriri','Telefon',
-    'Alte abateri','ASM','Permise total','Certificate total','Testări alcool 1',
-    'Testări alcool 2','Testări droguri','Accidente grave','Accidente ușoare',
+    'Alte abateri','ASM','Permise total','Certificate total','Testări alcool','Testări droguri','Accidente grave','Accidente ușoare',
     'Art.334','Art.335','Art.336/1','Art.336/2','Art.337','Art.338'];
   const rows=all.slice().sort((a,b)=>a.date.localeCompare(b.date)||(a.shift-b.shift)).map(s=>[
     fmtShort(s.date),['I','II','III'][s.shift-1]||s.shift,s.f_ofiter||'',
     num(s.f_pv),num(s.f_ts),num(s.f_av),s.f_val||'0',
     num(s.f_pol),num(s.f_vit),num(s.f_cent),num(s.f_ldoc),num(s.f_lum),
     num(s.f_opr),num(s.f_tel),num(s.f_altab),num(s.f_asm),
-    num(s.f_ptot),num(s.f_ctot),num(s.f_alc1),num(s.f_alc2),num(s.f_drog),
+    num(s.f_ptot),num(s.f_ctot),num(s.f_alc1),num(s.f_drog),
     num(s.f_accgr),num(s.f_accus),
     num(s.f_a334),num(s.f_a335),num(s.f_a3361),num(s.f_a3362),num(s.f_a337),num(s.f_a338)
   ].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(','));
@@ -1418,7 +1411,7 @@ function genPeriodReport(){
   // Aggregate all days
   const agg={f_pv:0,f_ts:0,f_av:0,f_pol:0,f_ptot:0,f_ctot:0,
     f_vit:0,f_cent:0,f_ldoc:0,f_lum:0,f_opr:0,f_tel:0,f_altab:0,f_asm:0,
-    f_alc1:0,f_alc2:0,f_drog:0,f_accgr:0,f_accus:0,
+    f_alc1:0,f_drog:0,f_accgr:0,f_accus:0,
     f_a334:0,f_a335:0,f_a3361:0,f_a3362:0,f_a337:0,f_a338:0,
     f_arpm:0,f_sdp:0,f_int:0,f_ri:0,f_aviz:0,f_val:0};
   let zileCompletate=0;
