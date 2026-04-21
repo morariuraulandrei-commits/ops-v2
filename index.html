@@ -41,7 +41,7 @@ button{-webkit-appearance:none;appearance:none;cursor:pointer;border:none}
 @keyframes spload{from{width:0}to{width:100%}}
 
 /* ── HEADER ── */
-.hdr{height:54px;background:var(--primary);display:flex;align-items:center;padding:0 14px;flex-shrink:0;z-index:100}
+.hdr{min-height:54px;background:var(--primary);display:flex;align-items:center;padding:0 14px;flex-shrink:0;z-index:100}
 .hdr-icon{width:34px;height:34px;background:linear-gradient(145deg,#1a56db,#3b82f6);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;margin-right:10px}
 .hdr-info{flex:1}
 .hdr-title{color:#fff;font-size:15px;font-weight:700;line-height:1.2}
@@ -51,7 +51,7 @@ button{-webkit-appearance:none;appearance:none;cursor:pointer;border:none}
 .hdr-date{color:rgba(255,255,255,.5);font-size:10px;margin-top:1px}
 
 /* ── TABS ── */
-.tabs{height:52px;background:var(--primary);display:flex;border-top:1px solid rgba(255,255,255,.08);flex-shrink:0}
+.tabs{min-height:52px;background:var(--primary);display:flex;border-top:1px solid rgba(255,255,255,.08);flex-shrink:0}
 .tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:rgba(255,255,255,.38);font-size:10px;font-weight:600;letter-spacing:.3px;background:none;position:relative;transition:color .18s}
 .tab.active{color:#fff}
 .tab.active::after{content:'';position:absolute;bottom:0;left:18%;right:18%;height:2.5px;background:#3b82f6;border-radius:2px 2px 0 0}
