@@ -751,6 +751,7 @@ const MONTHS_RO= ['ianuarie','februarie','martie','aprilie','mai','iunie','iulie
 const $   = id => document.getElementById(id);
 const fv  = id => { const e=$(id); return e?e.value.trim():''; };
 const num = v  => { const n=parseInt(v); return isNaN(n)?0:n; };
+const esc = s  => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 
 function todayISO(){
   const d=new Date();
@@ -1100,7 +1101,7 @@ function loadArch(){
     const badges=[1,2,3].map(i=>{
       const sh=shifts.find(s=>s.shift===i);
       const has=!!sh;
-      const nm=has&&sh.f_ofiter?` · ${sh.f_ofiter}`:'';
+      const nm=has&&sh.f_ofiter?` · ${esc(sh.f_ofiter)}`:'';
       return `<span class="ri-sbadge ${has?'ri-s'+i:'ri-miss'}">${has?(['I','II','III'][i-1]+nm):'—'}</span>`;
     }).join('');
     return `
